@@ -8,6 +8,7 @@ import os
 import numpy as np
 import sys
 Stopwords = set(stopwords.words('english'))
+nltk.download('punkt')
 
 def remove_special_characters(text):
     regex = re.compile('[^a-zA-Z0-9\s]')
@@ -33,14 +34,6 @@ def files_indexer(file_folder):
     return indexed_documents
 
 
-        
+file_folder = "my_corpus/docs/*"
 
-
-all_words = []
-dict_global = {}
-file_folder = 'my_corpus/docs/*'
-idx = 1
-files_with_index = {}
-
-    
-unique_words_all = set(dict_global.keys())
+print(files_indexer(file_folder))
