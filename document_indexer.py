@@ -1,7 +1,6 @@
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer, PorterStemmer
-from nltk.tokenize import sent_tokenize , word_tokenize
+from nltk.tokenize import word_tokenize
 import glob
 import re
 import os
@@ -17,9 +16,9 @@ def remove_special_characters(text):
 
 def files_indexer(file_folder):
     indexed_documents = {}
+    doc_idx = 1
 
     for file in glob.glob(file_folder):
-        print(file)
         fname = file
         file = open(file , "r")
         text = file.read()
@@ -29,11 +28,22 @@ def files_indexer(file_folder):
         words = [word for word in words if len(words)>1]
         words = [word.lower() for word in words]
         words = [word for word in words if word not in Stopwords]
-        indexed_documents[fname] = words
+        indexed_documents[doc_idx] = words
+        doc_idx += 1
 
     return indexed_documents
 
+def query_tokenizer(query):
+    """
+    Returns the set of tokens. Tokens can be separated by any number of blanks
+    """
+    query = re.split(r'\s+', query)
+    tokens = [token.lower() for token in query]
+    return tokens
 
-file_folder = "my_corpus/docs/*"
 
-print(files_indexer(file_folder))
+
+
+#file_folder = "my_corpus/docs/*"
+
+#print(files_indexer(file_folder))

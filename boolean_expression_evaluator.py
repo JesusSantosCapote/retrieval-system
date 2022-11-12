@@ -1,21 +1,10 @@
-import re
-
-def query_tokenizer(query):
-    """
-    Returns the set of tokens. Tokens can be separated by any number of blanks
-    """
-    query = re.split(r'\s+', query)
-    tokens = [token.lower() for token in query]
-    return tokens
-
 """
 Grammar to evaluate boolean expresions:
 E -> TX
 X -> or TX | epsilon
 T -> FY
 Y -> and FY | epsilon
-F -> NZ
-N -> not | epsilon
+F -> not Z | Z
 Z -> (E) | b
 """
 
