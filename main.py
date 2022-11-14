@@ -14,10 +14,8 @@ def run_boolean_model(documents):
     return output
 
 
-
-
 def main():
-    files_folders = ['cranfieldDocs/*']
+    files_folders = ['splitted_cranfieldDocs/*']
 
     documents = files_indexer(files_folders[0])
 

@@ -40,10 +40,3 @@ def query_tokenizer(query):
     query = re.split(r'\s+', query)
     tokens = [token.lower() for token in query]
     return tokens
-
-
-
-
-#file_folder = "my_corpus/docs/*"
-
-#print(files_indexer(file_folder))
