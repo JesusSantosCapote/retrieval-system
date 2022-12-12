@@ -1,4 +1,4 @@
-from document_indexer import query_tokenizer, files_indexer
+from document_indexer import query_tokenizer, extract_text_from_files, tokenize_documents
 from boolean_expression_evaluator import evaluate
 
 def run_boolean_model(documents):
@@ -14,12 +14,12 @@ def run_boolean_model(documents):
     return output
 
 
-def main():
-    files_folders = ['splitted_cranfieldDocs/*']
+files_folders = ['splitted_cranfieldDocs/*']
 
-    documents = files_indexer(files_folders[0])
+documents = extract_text_from_files(files_folders[0])
 
-    print(run_boolean_model(documents))
+tokenized_documents = tokenize_documents(documents)
 
-main()
+print(run_boolean_model(tokenized_documents))
+
 
