@@ -9,7 +9,7 @@ import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 Stopwords = set(stopwords.words('english'))
-nltk.download('punkt')
+#nltk.download('punkt')
 
 def remove_special_characters(text):
     regex = re.compile('[^a-zA-Z0-9\s]')
@@ -48,9 +48,13 @@ def get_tfidf_matrix(docs):
     """
     tfidf = TfidfVectorizer()
     result = tfidf.fit_transform(docs)
-    term_index = tfidf.vocabulary_
+    term_indexes = tfidf.vocabulary_
+    terms_idf = {}
 
-    return term_index, result
+    for ele1, ele2 in zip(tfidf.get_feature_names(), tfidf.idf_):
+        terms_idf[ele1] = ele2
+
+    return term_indexes, terms_idf, result
 
 
 def query_tokenizer(query):
@@ -60,3 +64,18 @@ def query_tokenizer(query):
     query = re.split(r'\s+', query)
     tokens = [token.lower() for token in query]
     return tokens
+
+
+def get_query_tf(tokenized_query):
+    count = 0
+    tokenized_query = [token for token in tokenized_query if token not in Stopwords]
+    query_with_tf = {}
+
+    for word in tokenized_query:
+        for i in range(len(tokenized_query)):
+            if word == tokenized_query[i]:
+                count += 1
+        query_with_tf[word] = count / len(tokenized_query)
+        count = 0
+
+    return query_with_tf
