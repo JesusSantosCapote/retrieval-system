@@ -15,6 +15,7 @@ def remove_special_characters(text):
     regex = re.compile('[^a-zA-Z0-9\s]')
     text_returned = re.sub(regex,'',text)
     return text_returned
+    
 
 def extract_text_from_files(file_folder):
     docs = []
@@ -26,6 +27,7 @@ def extract_text_from_files(file_folder):
         docs.append(text)
 
     return docs
+
 
 def tokenize_documents(document_list):
     tokenized_documents = {}
@@ -40,6 +42,7 @@ def tokenize_documents(document_list):
         doc_idx += 1
 
     return tokenized_documents
+
 
 def get_tfidf_matrix(docs):
     """
