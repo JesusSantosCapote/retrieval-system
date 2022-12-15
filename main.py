@@ -50,6 +50,42 @@ def run_vectorial_model(files_folder, query):
 
     return ranking
 
+def run_LSI_model(files_folder, query):
+    docs = extract_text_from_files(files_folder)
+    term_indexes, terms_idf, tfidf_matrix = get_tfidf_matrix(docs)
+    query = query_tokenizer(query)
+    query_with_tf = get_query_tf(query)
+
+    temp = {}
+    for query_term in query_with_tf.keys():
+        if query_term in term_indexes.keys():
+            temp[query_term] = query_with_tf[query_term]
+
+    query_with_tf = temp
+
+    query_vector = numpy.zeros(len(term_indexes))
+
+    for term in query_with_tf.keys():
+        query_vector[term_indexes[term]] = query_with_tf[term] * terms_idf[term]
+
+    A = numpy.transpose(tfidf_matrix)
+    T, S , DT = numpy.linalg.svd(A, full_matrices= False)
+    min = min(numpy.shape(A))
+    k = int(min*60/100)
+    DT = DT[:-(len(DT)-k)]
+    for i in range(k,len(T[0])):
+        T = numpy.delete(T,len(T[0])-1,axis=1)
+    T = numpy.transpose(T)
+    S = numpy.linalg.inv(S)
+    query_vector_lsi = numpy.transpose( numpy.dot( numpy.dot(T,S), numpy.transpose(query_vector) ) )
+
+    ranking = []
+
+
+
+
+    
+
 
 
 # query = "what similarity laws must be obeyed when constructing aeroelastic models of heated high speed aircraft ."
