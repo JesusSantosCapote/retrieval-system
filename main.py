@@ -46,6 +46,7 @@ def run_vectorial_model(files_folder, query):
         doc_query_cos = numpy.dot(query_vector, doc_vector) / (norm(query_vector) * norm(doc_vector))
         ranking.append((doc+1, doc_query_cos))
 
+
     ranking.sort(key=lambda x: x[1], reverse=True)
 
     return ranking
