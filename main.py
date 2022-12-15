@@ -68,7 +68,7 @@ def run_LSI_model(files_folder, query):
 
     for term in query_with_tf.keys():
         query_vector[term_indexes[term]] = query_with_tf[term] * terms_idf[term]
-
+    
     A = numpy.transpose(tfidf_matrix)
     T, S , DT = numpy.linalg.svd(A, full_matrices= False)
     min = min(numpy.shape(A))
