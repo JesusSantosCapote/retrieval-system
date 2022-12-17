@@ -54,6 +54,7 @@ def run_vectorial_model(files_folder, query):
 def run_LSI_model(files_folder, query):
     docs = extract_text_from_files(files_folder)
     term_indexes, terms_idf, tfidf_matrix = get_tfidf_matrix(docs)
+    tfidf_matrix = scipy.sparse.csr_matrix.toarray(tfidf_matrix ,order=None, out=None)
     query = query_tokenizer(query)
     query_with_tf = get_query_tf(query)
 
@@ -79,8 +80,16 @@ def run_LSI_model(files_folder, query):
     T = numpy.transpose(T)
     S = numpy.linalg.inv(S)
     query_vector_lsi = numpy.transpose( numpy.dot( numpy.dot(T,S), numpy.transpose(query_vector) ) )
+    DT = numpy.transpose(DT)
 
     ranking = []
+    for doc in range(numpy.shape(DT)[0]):
+        doc_vector = DT[doc]
+        doc_query_cos = numpy.dot(query_vector_lsi, doc_vector) / (norm(query_vector_lsi) * norm(doc_vector))
+        ranking.append((doc+1, doc_query_cos))
+
+    ranking.sort(key=lambda x: x[1], reverse=True)
+    return ranking
 
 
 
