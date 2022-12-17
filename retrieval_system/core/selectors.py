@@ -1,4 +1,6 @@
+from retrieval_system.core.models import Document
 from retrieval_system.utils.document_indexer import query_tokenizer
+from retrieval_system.utils.boolean_expression_evaluator import evaluate
 
 
 def search(query: str, search_type: str):
@@ -13,4 +15,5 @@ def __boolean_search(query: str):
 
     query = query_tokenizer(query)
 
-    return []
+    documents = Document.objects.all()
+    return evaluate(query, documents)

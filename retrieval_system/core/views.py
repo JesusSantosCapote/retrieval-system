@@ -1,25 +1,21 @@
-from django.views import generic
+from django.db.models import QuerySet
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny
+from .selectors import search
 
-from .forms import BooleanQueryForm
 
-# Create your views here.
+from .serializers import DocumentSerializer
+from .models import Document
 
 
-class BooleanQueryView(generic.FormView):
+class SearchDocumentsAPIView(ListAPIView):
 
-    template_name = "core/boolean_query.html"
-    form_class = BooleanQueryForm
+    serializer_class = DocumentSerializer
+    permission_classes = [AllowAny]
 
-    def get_context_data(self, **kwargs):
-        context = super(BooleanQueryView, self).get_context_data(**kwargs)
-        
-        query = self.request.GET.get("query", None)
-
+    def get_queryset(self) -> QuerySet[Document]:
+        query = self.request.query_params.get("query", None)
         if query:
-            results = 
-
-        return context
-
-    def form_valid(self, form):
-
-        return self.render_to_response(self.get_context_data(form=form))
+            results = search(query, "boolean")
+            return results
+        return Document.objects.none()

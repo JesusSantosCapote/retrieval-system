@@ -1,4 +1,4 @@
-from retrieval_system.core.models import Document
+from django.db.models import Q
 
 
 """
@@ -12,7 +12,7 @@ Z -> (E) | b
 """
 
 
-def evaluate(tokens, document: Document):
+def evaluate(tokens, documents) -> Q:
     """
     Evaluates an expression recursively.
     """
@@ -26,7 +26,7 @@ def evaluate(tokens, document: Document):
             if tokens[i] == "or":
                 i += 1
                 i, term2 = T(i)
-                result = value or term2
+                result = value.union(term2)
                 i, value = X(i, result)
 
         return i, value
@@ -41,7 +41,7 @@ def evaluate(tokens, document: Document):
                 operator = tokens[i]
                 i += 1
                 i, fact2 = F(i)
-                result = value and fact2
+                result = value.intersection(fact2)
                 i, value = Y(i, result)
 
         return i, value
@@ -50,16 +50,14 @@ def evaluate(tokens, document: Document):
         if tokens[i] == "not":
             i += 1
             i, value = Z(i)
-            return i, not value
+            return i, documents.difference(value)
 
         else:
             return Z(i)
 
     def Z(i):
         if tokens[i] not in ["(", ")", "and", "or", "not"]:
-            if tokens[i] in document:
-                return i + 1, True
-            return i + 1, False
+            return i + 1, documents.filter(term_documents__term__key=tokens[i])
 
         elif tokens[i] == "(":
             i, exp = E(i + 1)
