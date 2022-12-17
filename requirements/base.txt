@@ -24,6 +24,8 @@ djangorestframework==3.14.0  # https://github.com/encode/django-rest-framework
 django-cors-headers==3.13.0 # https://github.com/adamchainz/django-cors-headers
 # DRF-spectacular for api documentation
 drf-spectacular==0.24.2  # https://github.com/tfranzel/drf-spectacular
+jango-picklefield==3.1
+
 
 beautifulsoup4==4.11.1
 bs4==0.0.1

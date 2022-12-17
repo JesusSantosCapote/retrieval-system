@@ -38,18 +38,3 @@ def query_tokenizer(query):
     query = re.split(r"\s+", query)
     tokens = [token.lower() for token in query]
     return tokens
-
-
-def get_query_tf(tokenized_query):
-    count = 0
-    tokenized_query = [token for token in tokenized_query if token not in Stopwords]
-    query_with_tf = {}
-
-    for word in tokenized_query:
-        for i in range(len(tokenized_query)):
-            if word == tokenized_query[i]:
-                count += 1
-        query_with_tf[word] = count / len(tokenized_query)
-        count = 0
-
-    return query_with_tf

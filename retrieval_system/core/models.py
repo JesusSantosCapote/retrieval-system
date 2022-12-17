@@ -1,6 +1,8 @@
 from django.db import models
 from math import log
 
+from picklefield.fields import PickledObjectField
+
 
 class Document(models.Model):
     title = models.CharField(max_length=200)
@@ -8,6 +10,8 @@ class Document(models.Model):
     file = models.FileField(upload_to="documents/")
     author = models.CharField(max_length=200)
     processed = models.BooleanField(default=False)
+
+    doc_vector = PickledObjectField(default=list, editable=False, blank=True)
 
     def __str__(self) -> str:
         return self.title

@@ -1,6 +1,7 @@
 from .models import Document, Term, TermDocument
 
 from retrieval_system.utils.document_indexer import tokenize_document
+from retrieval_system.utils.vectorial_evaluator import calculate_tf_idf_matrix
 
 
 def process_document(document: Document):
@@ -32,3 +33,5 @@ def calculate_tf_idf():
     for term_document in term_documents:
         term_document.tf_idf = term_document.tf * term_document.term.idf
         term_document.save()
+
+    calculate_tf_idf_matrix()
