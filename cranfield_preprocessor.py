@@ -1,5 +1,6 @@
 import os
 from bs4 import BeautifulSoup
+import re
 
 def cranfield_splitter():
     in_path = 'cranfieldDocs'
@@ -42,4 +43,31 @@ def cranfield_splitter():
             outfile.close()
         infile.close()
 
-cranfield_splitter()
+def cisi_splitter():
+    in_path = 'cisi_corpus'
+    out_path = 'splitted_cisi'
+
+    with open(in_path + '/' + 'CISI.txt') as f:
+        lines = ""
+        for l in f.readlines():
+            lines += "\n" + l.strip() if l.startswith(".") else " " + l.strip()
+        lines = lines.lstrip("\n").split("\n")
+    f.close()
+
+    doc_id = ""
+    doc_text = ""
+    for l in lines:
+        if l.startswith(".I"):
+            doc_id = l.split(" ")[1].strip()
+
+        elif l.startswith(".X"):
+            outfilepath = out_path + '/' + doc_id
+            with open(outfilepath, 'w') as outfile:
+                outfile.write(doc_text)
+            outfile.close()
+
+            doc_id = ""
+            doc_text = ""
+
+        else:
+            doc_text += "\n" + l.strip()[3:] + " "

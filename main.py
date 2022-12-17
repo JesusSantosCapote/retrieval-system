@@ -88,10 +88,10 @@ def run_LSI_model(files_folder, query):
 
 
 
-# query = "what similarity laws must be obeyed when constructing aeroelastic models of heated high speed aircraft ."
+# query = "How can actually pertinent data, as opposed to references or entire articles themselves, be retrieved automatically in response to information requests?"
 
 
-# files_folders = ['splitted_cranfieldDocs/*']
+# files_folders = ['splitted_cisi/*']
 
 # print(run_vectorial_model(files_folders[0], query))
 
