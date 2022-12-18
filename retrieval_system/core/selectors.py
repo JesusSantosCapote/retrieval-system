@@ -9,6 +9,7 @@ from retrieval_system.utils.vectorial_evaluator import (
     get_doc_tf_idf_vector,
     doc_query_cos,
 )
+from retrieval_system.utils.lsi import evaluate as lsi_evaluate
 
 
 def search(query: str, search_type: str):
@@ -18,6 +19,9 @@ def search(query: str, search_type: str):
 
     elif search_type == "vectorial":
         return __vectorial_search(query)
+
+    elif search_type == "lsi":
+        return __lsi_search(query)
 
     return []
 
@@ -50,3 +54,13 @@ def __vectorial_search(query: str):
     documents = [x[0] for x in documents_ranking]
 
     return documents
+
+
+def __lsi_search(query: str):
+
+    query = query_tokenizer(query)
+    query = get_query_tf(query)
+
+    docments_ranking = lsi_evaluate(query)
+
+    return [document[0] for document in docments_ranking]
