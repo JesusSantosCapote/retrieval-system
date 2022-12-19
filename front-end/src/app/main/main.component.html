@@ -1,42 +1,47 @@
-<section>
-  <div>
-    <span>Corpus: </span>
-    <select *ngIf="corpora$ | async as corpora" [(ngModel)]="corpus">
-      <option *ngFor="let corpus of corpora" [value]="corpus.name">
-        {{ corpus.name }}
-      </option>
-    </select>
-  </div>
+<section class="search-config-panel">
+  <h2>Parámetros de búsqueda</h2>
 
-  <div>
-    <input
-      type="text"
-      placeholder="Search"
-      class="form-control"
-      [(ngModel)]="searchText"
-    />
-    <button type="submit" (click)="search()">Buscar</button>
+  <div class="form-container">
+    <mat-form-field>
+      <mat-label>Corpus:</mat-label>
+
+      <mat-select *ngIf="corpora$ | async as corpora" [(ngModel)]="corpus">
+        <mat-option *ngFor="let corpus of corpora" [value]="corpus.name">{{
+          corpus.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Modelo:</mat-label>
+
+      <mat-select [(ngModel)]="model">
+        <mat-option value="boolean">Modelo Booleano</mat-option>
+        <mat-option value="vectorial">Modelo Vectorial</mat-option>
+        <mat-option value="lsi">Modelo LSI</mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 </section>
-<section>
-  <div *ngIf="booleanResults | async as searchResult">
-    <h2>Resultados por el modelo Booleano:</h2>
-    <div *ngFor="let result of searchResult">
-      <app-document [document]="result"></app-document>
-    </div>
-  </div>
 
-  <div *ngIf="vectorialResults | async as searchResult">
-    <h2>Resultados por el modelo Vectorial:</h2>
-    <div *ngFor="let result of searchResult">
-      <app-document [document]="result"></app-document>
-    </div>
-  </div>
+<section class="search-input-panel">
+  <mat-form-field class="search-input">
+    <mat-label>Buscar</mat-label>
+    <input
+      type="text"
+      placeholder="Buscar"
+      class="form"
+      matInput
+      [(ngModel)]="searchText"
+    />
+  </mat-form-field>
+  <button mat-icon-button (click)="search()">
+    <mat-icon>search</mat-icon>
+  </button>
+</section>
 
-  <div *ngIf="lsiResults | async as searchResult">
-    <h2>Resultados por el modelo LSI:</h2>
-    <div *ngFor="let result of searchResult">
-      <app-document [document]="result"></app-document>
-    </div>
+<section *ngIf="results$ | async as searchResult">
+  <h2>Resultados:</h2>
+  <div class="results" *ngFor="let result of searchResult">
+    <app-document [document]="result"></app-document>
   </div>
 </section>

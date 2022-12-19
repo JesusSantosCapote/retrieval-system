@@ -15,24 +15,13 @@ export class MainComponent implements OnInit {
   searchText: string = '';
   corpora$: Observable<Corpus[]> = this.searchService.getCorpora();
   corpus: string = 'cranfield';
-  booleanResults!: Observable<Document[]>;
-  vectorialResults!: Observable<Document[]>;
-  lsiResults!: Observable<Document[]>;
+  model: 'boolean' | 'vectorial' | 'lsi' = 'vectorial';
+  results$!: Observable<Document[]>;
 
   search() {
-    this.booleanResults = this.searchService.search(
+    this.results$ = this.searchService.search(
       this.searchText,
-      'boolean',
-      this.corpus
-    );
-    this.vectorialResults = this.searchService.search(
-      this.searchText,
-      'vectorial',
-      this.corpus
-    );
-    this.lsiResults = this.searchService.search(
-      this.searchText,
-      'lsi',
+      this.model,
       this.corpus
     );
   }

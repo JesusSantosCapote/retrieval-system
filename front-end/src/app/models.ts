@@ -4,6 +4,7 @@ export interface Document {
   file: string;
   id: number;
   corpus_index: number;
+  content: string;
 }
 
 export interface Corpus {

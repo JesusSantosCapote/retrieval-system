@@ -22,11 +22,15 @@ class QueryRel:
         for result in results:
             if str(result.corpus_index) in self.rel:
                 relevant += 1
+        if len(self.rel) == 0:
+            return 0
         return relevant / len(self.rel)
 
     def evaluate_f1(self, results):
         precision = self.evaluate_precision(results)
         recall = self.evaluate_recall(results)
+        if precision + recall == 0:
+            return 0
         return 2 * precision * recall / (precision + recall)
 
 

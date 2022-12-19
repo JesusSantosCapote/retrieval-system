@@ -1,0 +1,25 @@
+section {
+  padding: 20px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: row;
+  & > * {
+    margin: 10px;
+  }
+}
+
+.search-input {
+  width: 500px;
+  border: none;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  & > * {
+    margin-top: 10px;
+  }
+}

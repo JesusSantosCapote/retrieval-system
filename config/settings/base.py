@@ -323,5 +323,17 @@ SPECTACULAR_SETTINGS = {
 # ------------------------------------------------------------------------------
 
 
-VECTORIAL_COSINE_SIMILARITY_THRESHOLD = 0.6
+VECTORIAL_COSINE_SIMILARITY_THRESHOLD = 0.595
+"""
+Cranfield
+Thresh -  F1
+0.5    -  0.010
+0.55   -  0.179
+0.575  -  0.221
+0.58   -  0.223
+0.59   -  0.228
+0.6   -  0.207
+0.7    -  0.037
+0.75   -  0.013
+"""
 LSI_COSINE_SIMILARITY_THRESHOLD = 0.7

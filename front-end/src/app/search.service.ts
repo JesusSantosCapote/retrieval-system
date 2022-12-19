@@ -14,9 +14,9 @@ export class SearchService {
     let queryParams = new HttpParams();
     queryParams = queryParams.set('type', model);
     queryParams = queryParams.set('corpus', corpus);
-    if (model === 'boolean') {
-      query = this.processBooleanQuery(query);
-    }
+    // if (model === 'boolean') {
+    //   query = this.processBooleanQuery(query);
+    // }
     queryParams = queryParams.set('query', query);
 
     return this.http.get<Document[]>(this.BASE_URL + 'search/', {
