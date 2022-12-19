@@ -1,13 +1,11 @@
 from django.conf import settings
+from django.db.utils import OperationalError
 from retrieval_system.core.models import Document, Corpus
-from retrieval_system.utils.document_indexer import (
-    query_tokenizer,
-)
+from retrieval_system.utils.document_indexer import query_tokenizer, preprocess_query
 from retrieval_system.utils.boolean_expression_evaluator import evaluate
 from retrieval_system.utils.vectorial_evaluator import (
     get_query_tf,
     get_query_vector,
-    get_doc_tf_idf_vector,
     doc_query_cos,
 )
 from retrieval_system.utils.lsi import evaluate as lsi_evaluate
@@ -18,10 +16,11 @@ def search(query: str, search_type: str, corpus: Corpus):
     if search_type == "boolean":
         return __boolean_search(query, corpus)
 
-    elif search_type == "vectorial":
+    query = preprocess_query(query)
+    if search_type == "vectorial":
         return __vectorial_search(query, corpus)
 
-    elif search_type == "lsi":
+    if search_type == "lsi":
         return __lsi_search(query, corpus)
 
     return []
@@ -30,12 +29,17 @@ def search(query: str, search_type: str, corpus: Corpus):
 def __boolean_search(query: str, corpus: Corpus):
 
     query = query_tokenizer(query)
-
     documents = corpus.documents.all()
-    return evaluate(query, documents)
+
+    try:
+        docs = list(evaluate(query, documents))
+    except OperationalError:
+        docs = []
+    return docs
 
 
 def __vectorial_search(query: str, corpus: Corpus):
+    print(query)
 
     query = query_tokenizer(query)
     query = get_query_tf(query)
@@ -50,7 +54,7 @@ def __vectorial_search(query: str, corpus: Corpus):
     for index, document in documents.items():
         doc_vector = corpus.tf_idf_matrix[index]
         cos = doc_query_cos(doc_vector, query_vector)
-        documents_ranking.append((document, cos))
+        documents_ranking.append((document, (cos + 1) / 2))
 
     documents_ranking.sort(key=lambda x: x[1], reverse=True)
 

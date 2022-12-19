@@ -3,7 +3,6 @@ from nltk.tokenize import word_tokenize
 import re
 
 Stopwords = set(stopwords.words("english"))
-# nltk.download('punkt')
 
 
 def remove_special_characters(text):
@@ -38,3 +37,25 @@ def query_tokenizer(query):
     query = re.split(r"\s+", query)
     tokens = [token.lower() for token in query]
     return tokens
+
+
+def preprocess_query(query):
+    words = remove_special_characters(query)
+    words = re.sub(re.compile("\d"), "", words)
+    words = word_tokenize(words)
+    words = [word.strip() for word in words if len(words) > 1]
+    words = [word.lower() for word in words]
+    words = [word for word in words if word not in Stopwords]
+    return " ".join(words)
+
+
+def preprocess_boolean_query(query):
+
+    words = remove_special_characters(query)
+    words = re.sub(re.compile("\d"), "", words)
+    words = word_tokenize(words)
+    words = [word.strip() for word in words if len(words) > 1]
+    words = [word.lower() for word in words]
+    words = [word for word in words if word not in Stopwords]
+
+    return " and ".join(words)

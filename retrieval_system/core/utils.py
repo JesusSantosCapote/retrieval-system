@@ -1,4 +1,5 @@
 import json
+from typing import Iterable
 
 
 class QueryRel:
@@ -12,6 +13,8 @@ class QueryRel:
         for result in results:
             if str(result.corpus_index) in self.rel:
                 relevant += 1
+        if len(results) == 0:
+            return 0
         return relevant / len(results)
 
     def evaluate_recall(self, results):
@@ -27,7 +30,7 @@ class QueryRel:
         return 2 * precision * recall / (precision + recall)
 
 
-def load_queries(qpath, rpath):
+def load_queries(qpath, rpath) -> Iterable[QueryRel]:
     queries = []
     with open(qpath, "r") as f:
         data_query = json.load(f)
