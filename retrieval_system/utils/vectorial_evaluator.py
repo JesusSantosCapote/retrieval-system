@@ -1,9 +1,12 @@
 import numpy as np
+import logging
 from numpy.linalg import norm
 from retrieval_system.core.models import Term, Document, TermDocument
 from nltk.corpus import stopwords
 
 Stopwords = set(stopwords.words("english"))
+
+log = logging.getLogger()
 
 
 def get_query_tf(tokenized_query):
@@ -29,9 +32,11 @@ def get_query_tf(tokenized_query):
     return query_with_tf
 
 
-def get_query_vector(query):
+def get_query_vector(query, corpus):
 
-    all_terms = enumerate(Term.objects.all())
+    all_terms = enumerate(
+        Term.objects.filter(term_documents__document__corpus=corpus).distinct()
+    )
     all_terms_dict = {term: index for index, term in all_terms}
 
     query_vector = np.zeros(len(all_terms_dict))
@@ -52,12 +57,15 @@ def doc_query_cos(doc, query):
     return np.dot(query, doc) / (norm(query) * norm(doc))
 
 
-def calculate_tf_idf_matrix():
+def calculate_tf_idf_matrix(corpus):
 
-    all_terms = enumerate(Term.objects.all())
+    all_terms = enumerate(
+        Term.objects.filter(term_documents__document__corpus=corpus).distinct()
+    )
     all_terms_dict = {term: index for index, term in all_terms}
 
-    all_documents = enumerate(Document.objects.all())
+    documents = corpus.documents.all()
+    all_documents = enumerate(documents)
     all_documents_dict = {document: index for index, document in all_documents}
 
     tf_idf_matrix = {}
@@ -70,6 +78,8 @@ def calculate_tf_idf_matrix():
             ] = term_document.tf_idf
         document.doc_vector = tf_idf_matrix[document]
         document.save()
-        print(f"CALCULATED TF-IDF VECTOR FOR DOCUMENT {document.id}...")
+        log.info(
+            f"CALCULATED TF-IDF VECTOR FOR DOCUMENT {document.id} in corpus {corpus.name}"
+        )
 
-    return tf_idf_matrix
+    return np.stack([document.doc_vector for document in documents])

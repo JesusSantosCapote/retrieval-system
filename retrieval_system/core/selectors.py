@@ -1,4 +1,4 @@
-from retrieval_system.core.models import Document
+from retrieval_system.core.models import Document, Corpus
 from retrieval_system.utils.document_indexer import (
     query_tokenizer,
 )
@@ -12,55 +12,58 @@ from retrieval_system.utils.vectorial_evaluator import (
 from retrieval_system.utils.lsi import evaluate as lsi_evaluate
 
 
-def search(query: str, search_type: str):
+def search(query: str, search_type: str, corpus: Corpus):
 
     if search_type == "boolean":
-        return __boolean_search(query)
+        return __boolean_search(query, corpus)
 
     elif search_type == "vectorial":
-        return __vectorial_search(query)
+        return __vectorial_search(query, corpus)
 
     elif search_type == "lsi":
-        return __lsi_search(query)
+        return __lsi_search(query, corpus)
 
     return []
 
 
-def __boolean_search(query: str):
+def __boolean_search(query: str, corpus: Corpus):
 
     query = query_tokenizer(query)
 
-    documents = Document.objects.all()
+    documents = corpus.documents.all()
     return evaluate(query, documents)
 
 
-def __vectorial_search(query: str):
+def __vectorial_search(query: str, corpus: Corpus):
 
     query = query_tokenizer(query)
     query = get_query_tf(query)
 
-    query_vector = get_query_vector(query)
+    query_vector = get_query_vector(query, corpus)
 
-    documents = Document.objects.all()
+    documents = {
+        index: document for index, document in enumerate(corpus.documents.all())
+    }
     documents_ranking = []
 
-    for document in documents:
-        doc_vector = get_doc_tf_idf_vector(document)
+    for index, document in documents.items():
+        doc_vector = corpus.tf_idf_matrix[index]
         cos = doc_query_cos(doc_vector, query_vector)
         documents_ranking.append((document, cos))
 
     documents_ranking.sort(key=lambda x: x[1], reverse=True)
 
-    documents = [x[0] for x in documents_ranking]
+    documents = [document for document, rank in documents_ranking if rank >= 0.5]
 
     return documents
 
 
-def __lsi_search(query: str):
+def __lsi_search(query: str, corpus: Corpus):
 
     query = query_tokenizer(query)
     query = get_query_tf(query)
 
-    docments_ranking = lsi_evaluate(query)
+    query_vector = get_query_vector(query, corpus)
+    documents_ranking = lsi_evaluate(query_vector, corpus)
 
-    return [document[0] for document in docments_ranking]
+    return [document for document, rank in documents_ranking if rank >= 0.5]

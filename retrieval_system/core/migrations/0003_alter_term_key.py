@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0002_inser_cranfield_document'),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='term',
-            name='key',
+            model_name="term",
+            name="key",
             field=models.CharField(max_length=200, unique=True),
         ),
     ]

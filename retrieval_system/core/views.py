@@ -6,7 +6,7 @@ from .selectors import search
 
 
 from .serializers import DocumentSerializer
-from .models import Document
+from .models import Document, Corpus
 
 
 class SearchDocumentsAPIView(ListAPIView):
@@ -18,7 +18,11 @@ class SearchDocumentsAPIView(ListAPIView):
     def get_queryset(self) -> QuerySet[Document]:
         query = self.request.query_params.get("query", None)
         type = self.request.query_params.get("type", "vectorial")
+        corpus = self.request.query_params.get("corpus", "all")
+
+        corpus = Corpus.objects.get(name=corpus)
+
         if query:
-            results = search(query, type)
+            results = search(query, type, corpus)
             return results
         return Document.objects.none()
