@@ -24,7 +24,7 @@ def tokenize_document(doc):
 
     words = remove_special_characters(doc)
     words = re.sub(re.compile("\d"), "", words)
-    words = word_tokenize(doc)
+    words = word_tokenize(words)
     words = [word.strip() for word in words if len(words) > 1]
     words = [word.lower() for word in words]
     words = [word for word in words if word not in Stopwords]

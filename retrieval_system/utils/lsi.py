@@ -49,7 +49,6 @@ def evaluate(query, corpus: Corpus):
         doc_query_cos = np.dot(query_vec, doc_vector) / (
             norm(query_vec) * norm(doc_vector)
         )
-        print(f"Doc {doc} evaluates to {doc_query_cos}")
         document_ranking.append((documents[doc], doc_query_cos))
 
     document_ranking.sort(key=lambda x: x[1], reverse=True)

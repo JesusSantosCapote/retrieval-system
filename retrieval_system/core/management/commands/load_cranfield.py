@@ -1,10 +1,8 @@
 import logging
-import os
+import json
 from django.core.management import BaseCommand
 from django.core.files.base import ContentFile
 from retrieval_system.core.models import Document, Corpus
-from retrieval_system.core.services import process_document, calculate_tf_idf
-from retrieval_system.core.utils import parse_cranfield_file
 
 log = logging.getLogger()
 
@@ -20,24 +18,35 @@ class Command(BaseCommand):
 
 def insert_cranfield_files():
 
-    folder_path = "cranfieldDocs"
+    path = "./datasets/cranfield/CRAN.ALL.json"
 
-    filenames = os.listdir(folder_path)
+    with open(path) as f:
+        data = json.load(f)
+
     corpus, created = Corpus.objects.get_or_create(name="cranfield")
-    for fname in filenames:
+    for i in range(len(data)):
 
-        # generate filenames
-        infilepath = folder_path + "/" + fname
+        corpus_index = i + 1
+        index = str(corpus_index)
 
-        title, text, author = parse_cranfield_file(infilepath)
+        title = data[index]["title"]
+        text = data[index]["abstract"]
 
-        content = f"{title}\n{author}\n{text}"
+        try:
+            author = data[index]["author"]
+        except KeyError:
+            author = "Unknown"
 
-        file = ContentFile(content.encode("utf-8"), name=fname)
+        file = ContentFile(text.encode("utf-8"), name="cranfield" + index + ".txt")
 
         # create a document object
         Document.objects.create(
-            title=title, content=text, author=author, file=file, corpus=corpus
+            title=title,
+            content=text,
+            author=author,
+            file=file,
+            corpus=corpus,
+            corpus_index=corpus_index,
         )
 
         log.info(f"Saved document: {title:30} on corpus: {corpus.name}")

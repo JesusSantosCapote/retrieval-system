@@ -1,3 +1,4 @@
+from django.conf import settings
 from retrieval_system.core.models import Document, Corpus
 from retrieval_system.utils.document_indexer import (
     query_tokenizer,
@@ -53,7 +54,11 @@ def __vectorial_search(query: str, corpus: Corpus):
 
     documents_ranking.sort(key=lambda x: x[1], reverse=True)
 
-    documents = [document for document, rank in documents_ranking if rank >= 0.5]
+    documents = [
+        document
+        for document, rank in documents_ranking
+        if rank >= settings.VECTORIAL_COSINE_SIMILARITY_THRESHOLD
+    ]
 
     return documents
 
@@ -66,4 +71,8 @@ def __lsi_search(query: str, corpus: Corpus):
     query_vector = get_query_vector(query, corpus)
     documents_ranking = lsi_evaluate(query_vector, corpus)
 
-    return [document for document, rank in documents_ranking if rank >= 0.5]
+    return [
+        document
+        for document, rank in documents_ranking
+        if rank >= settings.LSI_COSINE_SIMILARITY_THRESHOLD
+    ]

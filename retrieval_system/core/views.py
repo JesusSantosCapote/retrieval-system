@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from .selectors import search
 
 
-from .serializers import DocumentSerializer
+from .serializers import DocumentSerializer, CorpusSerializer
 from .models import Document, Corpus
 
 
@@ -26,3 +26,9 @@ class SearchDocumentsAPIView(ListAPIView):
             results = search(query, type, corpus)
             return results
         return Document.objects.none()
+
+
+class CorpusListView(ListAPIView):
+    serializer_class = CorpusSerializer
+    permission_classes = [AllowAny]
+    queryset = Corpus.objects.all()

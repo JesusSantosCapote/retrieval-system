@@ -1,0 +1,42 @@
+<section>
+  <div>
+    <span>Corpus: </span>
+    <select *ngIf="corpora$ | async as corpora" [(ngModel)]="corpus">
+      <option *ngFor="let corpus of corpora" [value]="corpus.name">
+        {{ corpus.name }}
+      </option>
+    </select>
+  </div>
+
+  <div>
+    <input
+      type="text"
+      placeholder="Search"
+      class="form-control"
+      [(ngModel)]="searchText"
+    />
+    <button type="submit" (click)="search()">Buscar</button>
+  </div>
+</section>
+<section>
+  <div *ngIf="booleanResults | async as searchResult">
+    <h2>Resultados por el modelo Booleano:</h2>
+    <div *ngFor="let result of searchResult">
+      <app-document [document]="result"></app-document>
+    </div>
+  </div>
+
+  <div *ngIf="vectorialResults | async as searchResult">
+    <h2>Resultados por el modelo Vectorial:</h2>
+    <div *ngFor="let result of searchResult">
+      <app-document [document]="result"></app-document>
+    </div>
+  </div>
+
+  <div *ngIf="lsiResults | async as searchResult">
+    <h2>Resultados por el modelo LSI:</h2>
+    <div *ngFor="let result of searchResult">
+      <app-document [document]="result"></app-document>
+    </div>
+  </div>
+</section>

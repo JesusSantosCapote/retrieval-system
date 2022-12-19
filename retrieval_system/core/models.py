@@ -30,7 +30,7 @@ class Document(models.Model):
         related_name="documents",
     )
 
-    doc_vector = PickledObjectField(default=list, editable=False, blank=True)
+    corpus_index = models.IntegerField(default=0, editable=False)
 
     def __str__(self) -> str:
         return self.title
