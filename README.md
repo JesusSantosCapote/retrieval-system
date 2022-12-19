@@ -1,83 +1,127 @@
 # retrieval-system
 
-Behold My Awesome Project!
+Sistema de recuperación de la información para la asignatura SRI. Matcom Curso 2022
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 License: MIT
 
-## Settings
+## Introducción:
 
-Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
+El proyecto consiste en la implementación de 3 modelos de recuperación de la información
+y la integración de los mismos en un sistema que permita hacer consultas sobre distintos corpus.
 
-## Basic Commands
 
-### Setting Up Your Users
+Se desarrolló el modelo Booleano y vectorial vistos en conferencias así como el modelo basado en indexación por semántica latente (LSI).
 
--   To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
 
--   To create a **superuser account**, use this command:
+## Arquitectura
 
-        $ python manage.py createsuperuser
+El proyecto está compuesto por una aplicación en Django que funciona de Backend, usa una base de datos relacional
+(sqlite3 en desarrollo y PostgreSQL en producción). Este backend expone una API para la realización de consultas, así
+como un sitio de administración que permite administrar los documentos y los corpus.
 
-For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
+Se tiene además una aplicación Backend minimalista para la realización de consultas.
 
-### Type checks
+## Setup
 
-Running type checks with mypy:
+Para correr el backend siga los siguientes pasos:
 
-    $ mypy retrieval_system
-
-### Test coverage
-
-To run the tests, check your test coverage, and generate an HTML coverage report:
-
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
-
-#### Running tests with pytest
-
-    $ pytest
-
-### Live reloading and Sass CSS compilation
-
-Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/developing-locally.html#sass-compilation-live-reloading).
-
-### Celery
-
-This app comes with Celery.
-
-To run a celery worker:
-
-``` bash
-cd retrieval_system
-celery -A config.celery_app worker -l info
+1- Instalar dependencias:
+```bash
+pip install -r requirements/local.txt
 ```
 
-Please note: For Celery's import magic to work, it is important *where* the celery commands are run. If you are in the same folder with *manage.py*, you should be right.
+2- Ejecutar las migraciones para estructurar la base de datos:
+```bash
+python manage.py migrate
+```
 
-### Email Server
+3- Montar el servidor:
+```bash
+python manage.py runserver
+```
 
-In development, it is often nice to be able to see emails that are being sent from your application. For that reason local SMTP server [MailHog](https://github.com/mailhog/MailHog) with a web interface is available as docker container.
+Opcionalmente puede crear un superusuario para acceder al sitio de administración
+```bash
+python manage.py createsuperuser
+```
 
-Container mailhog will start automatically when you will run all docker containers.
-Please check [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html) for more details how to start all containers.
+Cargar el corpus `Cranfield`
+```bash
+python manage.py load_cranfield
+```
 
-With MailHog running, to view messages that are sent by your application, open your browser and go to `http://127.0.0.1:8025`
+Cargar el corpus `Med`
+```bash
+python manage.py load_med
+```
 
-### Sentry
+Después de cargar cada corpus deberá procesarse dicho corpus.
+El preprocesamiento de los corpus es una tarea relativamente costosa, pero que se ejecuta cada vez que un corpus cambie y garantiza poder hacer las consultas de forma más rápida.
 
-Sentry is an error logging aggregator service. You can sign up for a free account at <https://sentry.io/signup/?code=cookiecutter> or download and host it yourself.
-The system is set up with reasonable defaults, including 404 logging and integration with the WSGI application.
+Para procesar un corpus ejecute:
+```bash
+python manage.py process_corpus <corpus_name>
+```
 
-You must set the DSN url in production.
+donde `corpus_name` es el nombre del corpus ('cranfield', 'med') .
 
-## Deployment
+### Realizar consultas
 
-The following details how to deploy this application.
+Una vez montado el servidor puede realizar consultas mediante la API al endpoint
 
-### Docker
+`http://127.0.0.1:8000/api/search/`
 
-See detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).
+Este endpoint toma varios parametros:
+
+> type: Modelo a usar. Posibles valores: boolean | vectorial[default] | lsi>
+
+> corpus: Corpus sobre el cual hacer la consulta
+
+> query: Consulta a realizar
+
+Ejemplo:
+
+> http://127.0.0.1:8000/api/search/?type=boolean&corpus=cranfield&query=electron%20and%20distribution%20or%20(%20thermodynamic%20and%20heat%20)%20
+
+> http://127.0.0.1:8000/api/search/?type=vectorial&corpus=med&query=acid%20concentration%20in%20testosterone
+
+### Evaluar los modelos
+
+Se implemental las medidas de precisión, recobrado y f1 para
+la evaluación de los modelos. Existe un comando para realizar
+dicha evaluación sobre un corpus.
+
+`python manage.py evaluate_model corpus model query rel measure`
+
+Donde:
+
+- corpus: nombre del corpus que se utiliza para la evaluación
+- model: modelo a evaluar < 'boolean' | 'vectorial' | 'lsi' >
+- query: dirección del fichero con las consultas
+- rel: dirección del fichero con los documentos relevantes por consultas
+- measure: medida a usar para la evaluación < 'precision' | 'recall' | 'f1' >
+
+Los ficheros query y rel se esperan en formato json con la estructura similar a los encontrados en el directorio `datasets`
+
+## Cliente
+
+La aplicación cliente para ejecutar consultas está hecha en Angular con Angular Material.
+
+Para ejecutarla moverse al directorio front-end:
+
+1- Instalar dependencias:
+```bash
+npm install -g @angular/cli
+npm install
+```
+
+2- Montar servidor:
+```bash
+ng serve
+```
+
+La aplicación se estará sirviendo en el puerto 4200
+
