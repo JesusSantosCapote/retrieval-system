@@ -1,0 +1,47 @@
+<section class="search-config-panel">
+  <h2>Parámetros de búsqueda</h2>
+
+  <div class="form-container">
+    <mat-form-field>
+      <mat-label>Corpus:</mat-label>
+
+      <mat-select *ngIf="corpora$ | async as corpora" [(ngModel)]="corpus">
+        <mat-option *ngFor="let corpus of corpora" [value]="corpus.name">{{
+          corpus.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Modelo:</mat-label>
+
+      <mat-select [(ngModel)]="model">
+        <mat-option value="boolean">Modelo Booleano</mat-option>
+        <mat-option value="vectorial">Modelo Vectorial</mat-option>
+        <mat-option value="lsi">Modelo LSI</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</section>
+
+<section class="search-input-panel">
+  <mat-form-field class="search-input">
+    <mat-label>Buscar</mat-label>
+    <input
+      type="text"
+      placeholder="Buscar"
+      class="form"
+      matInput
+      [(ngModel)]="searchText"
+    />
+  </mat-form-field>
+  <button mat-icon-button (click)="search()">
+    <mat-icon>search</mat-icon>
+  </button>
+</section>
+
+<section *ngIf="results$ | async as searchResult">
+  <h2>Resultados:</h2>
+  <div class="results" *ngFor="let result of searchResult">
+    <app-document [document]="result"></app-document>
+  </div>
+</section>
