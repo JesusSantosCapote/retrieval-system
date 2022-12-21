@@ -6,8 +6,6 @@ from retrieval_system.core.models import Document, Corpus
 def calculate_lsi(corpus: Corpus):
 
     tfidf_matrix, documents = corpus.tf_idf_matrix, corpus.documents.all()
-    print("TFIDF MATRIX FOR SVD: ", tfidf_matrix)
-    print("SHAPE: ", np.shape(tfidf_matrix))
 
     A = np.transpose(tfidf_matrix)
 
@@ -16,11 +14,8 @@ def calculate_lsi(corpus: Corpus):
     minimum = min(np.shape(A))
     k = int(minimum * 60 / 100)
 
-    DT = DT[: -(len(DT) - k)]
-
-    # Truncate matrices
-    T = T[:, :k]
-    S = S[:k]
+    # Truncate matrix
+    S[k:] = 0
     S = np.diag(S)
 
     S = np.linalg.inv(S)

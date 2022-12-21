@@ -12,6 +12,7 @@ def process_document(document: Document):
 
     document_tokens = tokenize_document(document.content)
 
+    max_tf = 0
     for token in document_tokens:
 
         term, _unused = Term.objects.get_or_create(key=token)
@@ -25,6 +26,12 @@ def process_document(document: Document):
         else:
             term_document.count += 1
         term_document.tf = term_document.count / len(document_tokens)
+        term_document.save()
+        max_tf = max(max_tf, term_document.tf)
+
+    # Normalize frequencies
+    for term_document in document.term_documents.all():
+        term_document.tf = term_document.tf / max_tf
         term_document.save()
 
     document.processed = True

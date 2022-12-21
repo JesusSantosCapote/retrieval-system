@@ -3,6 +3,7 @@ import logging
 from numpy.linalg import norm
 from retrieval_system.core.models import Term, Document, TermDocument
 from nltk.corpus import stopwords
+from collections import Counter
 
 Stopwords = set(stopwords.words("english"))
 
@@ -12,20 +13,23 @@ log = logging.getLogger()
 def get_query_tf(tokenized_query):
     count = 0
     tokenized_query = [token for token in tokenized_query if token not in Stopwords]
-    query_with_tf = {}
 
-    for word in tokenized_query:
-        for i in range(len(tokenized_query)):
-            if word == tokenized_query[i]:
-                count += 1
-        query_with_tf[word] = count / len(tokenized_query)
-        count = 0
+    query_with_tf = Counter(tokenized_query)
+    max_tf = 0
+    for key in query_with_tf:
+        tf = query_with_tf[key] / len(tokenized_query)
+        query_with_tf[key] = tf
+        max_tf = max(max_tf, tf)
+
+    # Normalize tf
+    for key in query_with_tf:
+        query_with_tf[key] = query_with_tf[key] / max_tf
 
     terms = Term.objects.filter(key__in=query_with_tf.keys())
 
     query_with_tf = {
-        terms.get(key=term): index
-        for term, index in query_with_tf.items()
+        terms.get(key=term): tf
+        for term, tf in query_with_tf.items()
         if terms.filter(key=term).exists()
     }
 
