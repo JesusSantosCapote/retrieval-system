@@ -45,3 +45,7 @@
     <app-document [document]="result"></app-document>
   </div>
 </section>
+
+<section class="loader" *ngIf="loading" #loader>
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</section>

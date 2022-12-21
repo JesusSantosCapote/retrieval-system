@@ -5,13 +5,23 @@ from django_admin_listfilter_dropdown.filters import (
     ChoiceDropdownFilter,
 )
 
-from .models import Document, Term, TermDocument
+from .models import Document, Term, TermDocument, Corpus
+
+admin.site.site_title = "Retrieval System"
+admin.site.site_header = "Retrieval System"
+
+
+@admin.register(Corpus)
+class CorpusAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    search_fields = ["name"]
 
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ["title", "author"]
+    list_display = ["title", "author", "corpus"]
     search_fields = ["title", "author"]
+    list_filter = [("corpus", RelatedDropdownFilter)]
 
 
 @admin.register(Term)
