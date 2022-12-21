@@ -22,7 +22,7 @@ El proyecto está compuesto por una aplicación en Django que funciona de Backen
 (sqlite3 en desarrollo y PostgreSQL en producción). Este backend expone una API para la realización de consultas, así
 como un sitio de administración que permite administrar los documentos y los corpus.
 
-Se tiene además una aplicación Backend minimalista para la realización de consultas.
+Se tiene además una aplicación cliente minimalista para la realización de consultas.
 
 ## Setup
 
