@@ -44,8 +44,9 @@ def calculate_tf_idf(corpus):
     ).prefetch_related("term")
 
     for term_document in term_documents:
-        term_document.tf_idf = term_document.tf * term_document.term.idf
+        term_document.tf_idf = term_document.tf * term_document.term.idf(corpus)
         term_document.save()
+        log.info(f"Calculated tf-idf for term document {term_document}")
 
     return calculate_tf_idf_matrix(corpus)
 
@@ -60,9 +61,9 @@ def process_corpus(corpus: Corpus):
         log.info(f"Processed document {document.title}")
 
     log.info("Calculating tf-idf")
-    corpus.tf_idf_matrix = calculate_tf_idf(corpus)
+    # corpus.tf_idf_matrix = calculate_tf_idf(corpus)
 
-    corpus.save()
+    # corpus.save()
 
     log.info("Calculating LSI")
     T, S, dt_lsi_matrix, documents = calculate_lsi(corpus)

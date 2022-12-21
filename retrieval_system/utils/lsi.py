@@ -18,7 +18,7 @@ def calculate_lsi(corpus: Corpus):
     S[k:] = 0
     S = np.diag(S)
 
-    S = np.linalg.inv(S)
+    # S = np.linalg.inv(S)
     DT = np.transpose(DT)
 
     return T, S, DT, documents

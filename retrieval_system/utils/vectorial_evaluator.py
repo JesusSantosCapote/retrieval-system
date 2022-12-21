@@ -46,7 +46,7 @@ def get_query_vector(query, corpus):
     query_vector = np.zeros(len(all_terms_dict))
     for term in query:
         if term in all_terms_dict.keys():
-            query_vector[all_terms_dict[term]] = query[term] * term.idf
+            query_vector[all_terms_dict[term]] = query[term] * term.idf(corpus)
 
     return query_vector
 

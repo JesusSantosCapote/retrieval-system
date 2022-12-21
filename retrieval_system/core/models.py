@@ -39,16 +39,14 @@ class Document(models.Model):
 class Term(models.Model):
     key = models.CharField(max_length=200, unique=True)
 
-    @property
-    def documents_count(self):
+    def documents_count(self, corpus):
         """Number of documents that contains this term"""
-        return self.term_documents.count()
+        return self.term_documents.filter(document__corpus=corpus).count()
 
-    @property
-    def idf(self):
+    def idf(self, corpus):
         """Inverse document frequency"""
-        total_documents = Document.objects.all().count()
-        return log(total_documents / (self.documents_count + 1))
+        total_documents = Document.objects.filter(corpus=corpus).count()
+        return log(total_documents / (self.documents_count(corpus) + 1))
 
     def __str__(self) -> str:
         return self.key
